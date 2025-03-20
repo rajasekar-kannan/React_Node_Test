@@ -3,6 +3,8 @@ const db = require('./db/config');
 const route = require('./controllers/route');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const { apiPathNotFoundError } = require('./utils/api-error');
+const ErrorHandler = require('./middelwares/error-handler');
 
 require('dotenv').config();
 
@@ -10,6 +12,10 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 app.use('/api', route);
+
+app.use(apiPathNotFoundError);
+app.use(ErrorHandler.handle());
+ErrorHandler.initializeUnhandledException();
 
 app.get('/', async (req, res) => {
   res.send('Welcome to my world...');

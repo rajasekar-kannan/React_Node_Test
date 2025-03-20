@@ -1,15 +1,11 @@
 const { Meetings } = require('../../model/schema/meeting');
+const { STATUS } = require('../../utils/constants');
 
 const add = async (req, res) => {
-  try {
-    req.body.createdDate = new Date();
-    const meeting = new Meetings(req.body);
-    await meeting.save();
-    res.status(200).json(meeting);
-  } catch (err) {
-    console.error('Failed to create Meeting:', err);
-    res.status(400).json({ error: 'Failed to create Meeting' });
-  }
+  req.body.createdDate = new Date();
+  const meeting = new Meetings(req.body);
+  await meeting.save();
+  return { statusCode: STATUS.CREATED, data: meeting };
 };
 
 const index = async (req, res) => {
@@ -55,10 +51,10 @@ const view = async (req, res) => {
 
 const deleteData = async (req, res) => {
   try {
-    const meeting = await Meetings.findByIdAndUpdate(req.params.id, {
+    await Meetings.findByIdAndUpdate(req.params.id, {
       deleted: true,
     });
-    res.status(200).json({ message: 'done', meeting });
+    res.status(200).json({ message: 'done' });
   } catch (err) {
     res.status(404).json({ message: 'error', err });
   }
@@ -66,11 +62,11 @@ const deleteData = async (req, res) => {
 
 const deleteMany = async (req, res) => {
   try {
-    const meeting = await Meetings.updateMany(
+    await Meetings.updateMany(
       { _id: { $in: req.body } },
       { $set: { deleted: true } }
     );
-    res.status(200).json({ message: 'done', meeting });
+    res.status(200).json({ message: 'done' });
   } catch (err) {
     res.status(404).json({ message: 'error', err });
   }

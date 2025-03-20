@@ -2,13 +2,14 @@ const express = require('express');
 
 const meeting = require('./meeting');
 const auth = require('../../middelwares/auth');
+const asyncWrapper = require('../../middelwares/async-wrapper');
 
 const router = express.Router();
 
-router.post('/add', auth, meeting.add);
-router.get('/', auth, meeting.index);
-router.get('/view/:id', auth, meeting.view)
-router.delete('/delete/:id', auth, meeting.deleteData)
-router.post('/deleteMany', auth, meeting.deleteMany)
+router.post('/add', auth, asyncWrapper(meeting.add));
+router.get('/', auth, asyncWrapper(meeting.index));
+router.get('/view/:id', auth, asyncWrapper(meeting.view));
+router.delete('/delete/:id', auth, asyncWrapper(meeting.deleteData));
+router.post('/deleteMany', auth, asyncWrapper(meeting.deleteMany));
 
 module.exports = router;
