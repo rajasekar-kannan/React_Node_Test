@@ -66,7 +66,9 @@ const AddMeeting = (props) => {
   const formik = useFormik({
     initialValues: initialValues,
     validationSchema: MeetingSchema,
-    onSubmit: (values, { resetForm }) => {},
+    onSubmit: (values, { resetForm }) => {
+      AddData();
+    },
   });
   const {
     errors,
@@ -78,9 +80,18 @@ const AddMeeting = (props) => {
     setFieldValue,
   } = formik;
 
-  const AddData = async () => {};
-
-  const fetchAllData = async () => {};
+  const AddData = async () => {
+    try {
+      setIsLoding(true);
+      await postApi('api/meeting/add', values);
+      await fetchData();
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setIsLoding(false);
+    }
+    onClose();
+  };
 
   useEffect(() => {}, [props.id, values.related]);
 
