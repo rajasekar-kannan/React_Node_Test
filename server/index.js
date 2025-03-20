@@ -5,35 +5,55 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 require('dotenv').config();
-const port = process.env.PROT || 5001;
 
-//Setup Express App
 const app = express();
-// Middleware
 app.use(bodyParser.json());
-// Set up CORS
 app.use(cors());
-//API Routes
 app.use('/api', route);
 
 app.get('/', async (req, res) => {
   res.send('Welcome to my world...');
 });
 
-// Get port from environment and store in Express.
+const initDb = async () => {
+  const DATABASE_URL = process.env.DB_URL || 'mongodb://127.0.0.1:27017';
+  const DATABASE = process.env.DB || 'Prolink';
 
-const server = app.listen(port, () => {
-  const protocol =
-    process.env.HTTPS === true || process.env.NODE_ENV === 'production'
-      ? 'https'
-      : 'http';
-  const { address, port } = server.address();
-  const host = address === '::' ? '127.0.0.1' : address;
-  console.log(`Server listening at ${protocol}://${host}:${port}/`);
-});
+  await db(DATABASE_URL, DATABASE);
+};
 
-// Connect to MongoDB
-const DATABASE_URL = process.env.DB_URL || 'mongodb://127.0.0.1:27017';
-const DATABASE = process.env.DB || 'Prolink';
+async function startServer() {
+  try {
+    const port = process.env.PORT || 5001;
 
-db(DATABASE_URL, DATABASE);
+    await initDb();
+
+    const server = app.listen(port, () => {
+      const isProductionEnvironment =
+        process.env.HTTPS === 'true' || process.env.NODE_ENV === 'production';
+
+      const protocol = isProductionEnvironment ? 'https' : 'http';
+      const { address, port } = server.address();
+      const host = address === '::' ? '127.0.0.1' : address;
+
+      console.log(`Server listening at ${protocol}://${host}:${port}/`);
+    });
+
+    // Handle server errors
+    server.on('error', (err) => {
+      console.error('Server failed to start:', err.message);
+      process.exit(1);
+    });
+
+    return server;
+  } catch (err) {
+    console.error('Issue running application:', err.message);
+    process.exit(1);
+  }
+}
+// Start server only if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+  startServer();
+}
+
+module.exports = app;
