@@ -30,7 +30,7 @@ import { LiaMousePointerSolid } from 'react-icons/lia';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { MeetingSchema } from 'schema';
-import { getApi, postApi } from 'services/api';
+import { postApi } from 'services/api';
 
 const AddMeeting = (props) => {
   const { onClose, isOpen, setAction, from, fetchData, view } = props;
@@ -84,6 +84,7 @@ const AddMeeting = (props) => {
     try {
       setIsLoding(true);
       await postApi('api/meeting/add', values);
+      toast('Successfully saved')
       await fetchData();
     } catch (e) {
       console.log(e);

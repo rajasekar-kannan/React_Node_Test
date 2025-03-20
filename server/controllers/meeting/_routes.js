@@ -1,6 +1,6 @@
 const express = require('express');
 
-const meeting = require('./meeting');
+const meeting = require('./controller');
 const auth = require('../../middelwares/auth');
 const asyncWrapper = require('../../middelwares/async-wrapper');
 

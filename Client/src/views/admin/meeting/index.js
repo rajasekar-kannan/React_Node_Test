@@ -9,7 +9,6 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import { getApi } from 'services/api';
 import { HasAccess } from '../../../redux/accessUtils';
 import CommonCheckTable from '../../../components/reactTable/checktable';
 import { SearchIcon } from '@chakra-ui/icons';
@@ -140,11 +139,13 @@ const Index = () => {
       setIsLoding(true);
       let response = await deleteManyApi('api/meeting/deleteMany', ids);
       if (response.status === 200) {
+        toast('Done!')
         setSelectedValues([]);
         setDeleteMany(false);
         setAction((pre) => !pre);
       }
     } catch (error) {
+      toast.error('Failed!')
       console.log(error);
     } finally {
       setIsLoding(false);
